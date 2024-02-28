@@ -1,0 +1,64 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  
+  *,
+  ::after,
+  ::before {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  .save-btn {
+    font-size: 20px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    margin: auto;
+    width: 200px;
+    background: #27c027;
+    border-radius: 5px;
+    color: #ffffff;
+  }
+
+  
+  .save-btn:hover {
+    font-size: 20px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    margin: auto;
+    width: 200px;
+    background: #11f711;
+    border-radius: 5px;
+    color: #ffffff;
+    border-color: #00eeff;
+  }
+
+  .mandatry {
+    color: red;
+  }
+
+  .form_validating {
+    color: red;
+  }
+
+  input#phoneNumber {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--bs-body-color);
+    appearance: none;
+    background-color: var(--bs-body-bg);
+    background-clip: padding-box;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+  
