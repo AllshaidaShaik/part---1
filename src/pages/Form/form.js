@@ -1,11 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import Select from 'react-select'
 import countryList from 'react-select-country-list'
-import PhoneInput, { isValidPhoneNumber, formatPhoneNumberIntl } from 'react-phone-number-input';
+import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css'
+import API from '../Services/BaseService'
+import { useNavigate } from "react-router-dom";
+import { Modal } from 'react-bootstrap';
 
 const Form = () => {
-
+    const navigate = useNavigate();
     const options = useMemo(() => countryList().getData(), [])
     const stateOptions = [
         { value: 'Alabama', label: 'Alabama' },
@@ -103,7 +106,18 @@ const Form = () => {
     const [errorsHeight, setErrorsHeight] = useState("");
     const [errorsWeight, setErrorsWeight] = useState("");
     const [errorsFt, setErrorsFt] = useState("");
-    const [displayedData, setDisplayedData] = useState("");
+    const [dataSource, setDataSource] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [message, setMessage] = useState(false);
+    const [messageErr, setMessageErr] = useState(false);
+
+    const openPopup = () => {
+        setMessage(true);
+    }
+
+    const closePopup = () => {
+        setMessage(false);
+    }
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -160,6 +174,7 @@ const Form = () => {
         setErrorsHeight("");
         setErrorsFt("");
         setErrorsWeight("");
+        setErrorMessage("");
 
         if (!formData.firstName) {
             setErrorsFirstName('First Name is required');
@@ -229,21 +244,53 @@ const Form = () => {
             return;
         }
 
-        const formattedData = {
-            FirstName: formData.firstName,
-            LastName: formData.lastName,
-            MiddleName: formData.middleName,
-            Address: `${formData.address}, ${value}, ${value == "United States" ? valueState : formData.state}, ${formData.city}, ${formData.zipCode}`,
-            Email: formData.email,
-            PhoneNumber: phoneNumber,
-            Height: `${formData.height} (${valueHeight})`,
-            Weight: formData.weight + " " +  "(kgs)"
+        let request = {
+            first_name: formData.firstName,
+            middle_name: formData.middleName,
+            last_name: formData.lastName,
+            address: formData.address,
+            country: value,
+            state: value == "United States" ? valueState : formData.state,
+            city: formData.city,
+            zip_code: formData.zipCode,
+            email: formData.email,
+            phone_number: phoneNumber,
+            height: formData.height,
+            height_type: valueHeight,
+            weight: formData.weight
         };
-        setDisplayedData(formattedData);
+
+        API.post('/form/save-details', request).then((response) => {
+            if (response.data.data) {
+                setDataSource(response.data?.data);
+
+            }
+            else {
+                setTimeout(() => {
+                    setErrorMessage(response.data?.error);
+                }, 100);
+            }
+        });
+
+
     };
+
+    const deleteDetails = (data) => {
+
+        API.delete(`/form/delete-details/${data}`).then((response) => {
+            setMessageErr(response.data?.message)
+            openPopup();
+            setDataSource("");
+
+        });
+
+    }
 
     return (
         <div className="container-fluid mt-5">
+            <div className='d-flex justify-content-end'>
+                <button className='btn submit-btn' onClick={(e) => navigate('/submittedDetails')}>Submitted Details</button>
+            </div>
             <h1 className="text-center">Add Form</h1>
             <div className="container shadow-lg p-3 mb-5 bg-body rounded">
                 <form>
@@ -294,6 +341,7 @@ const Form = () => {
                             <label for="exampleInputPassword1" className="form-label"><span className="mandatry">* </span> Email</label>
                             <input type="text" name='email' className="form-control" value={formData.email} onChange={handleChange} />
                             <p className='form_validating'>{errorsEmail}</p>
+                            <p className='form_validating'>{errorMessage}</p>
                         </div>
                         <div className="col-lg-4 mb-3">
                             <label for="exampleInputPassword1" className="form-label"><span className="mandatry">* </span> Phone Number</label>
@@ -305,11 +353,11 @@ const Form = () => {
                                 error={phoneNumber ? (isValidPhoneNumber(phoneNumber) ? undefined : 'Invalid phone number') : 'Phone number required'}
                             />
                             {phoneNumber &&
-                            <>
-                            <div className='mandatry'>
-                             {phoneNumber && isValidPhoneNumber(phoneNumber) ? undefined : 'Invalid phone number'}
-                             </div>
-                             </>}
+                                <>
+                                    <div className='mandatry'>
+                                        {phoneNumber && isValidPhoneNumber(phoneNumber) ? undefined : 'Invalid phone number'}
+                                    </div>
+                                </>}
                             <p className='form_validating'>{errorsPhoneNumber}</p>
                         </div>
                         <div className="col-lg-2 mb-3">
@@ -328,28 +376,43 @@ const Form = () => {
                             <p className='form_validating'>{errorsWeight}</p>
                         </div>
                     </div>
-                    <div className="">
+                    <div className="d-flex mar-aut">
                         <button className="btn save-btn" onClick={handleSubmit}>Save</button>
                     </div>
                 </form>
             </div>
-            {displayedData &&
+            {dataSource &&
                 <>
                     <h1 className="text-center">Submitted Details</h1>
                     <div className="container shadow-lg p-3 mb-5 bg-body rounded">
+                        <div className='d-flex justify-content-end'>
+                            <button className='btn delete-btn' onClick={() => deleteDetails(dataSource.form_id)}>Delete</button>
+                        </div>
                         <div className="mb-3">
-                            <p><b>First Name :</b> {displayedData.FirstName}</p>
-                            <p><b>Middle Name :</b> {displayedData.MiddleName}</p>
-                            <p><b>Last Name :</b> {displayedData.LastName}</p>
-                            <p><b>Address :</b> {displayedData.Address}</p>
-                            <p><b>Email :</b> {displayedData.Email},<b> Phone Number :</b> {displayedData.PhoneNumber}</p>
-                            <p><b>Height : </b> {displayedData.Height},<b> Weight :</b> {displayedData.Weight}</p>
+                            <p><b>First Name :</b> {dataSource.first_name}</p>
+                            <p><b>Middle Name :</b> {dataSource.middle_name}</p>
+                            <p><b>Last Name :</b> {dataSource.last_name}</p>
+                            <p><b>Address :</b> {dataSource.address},  {dataSource.country},  {dataSource.state},  {dataSource.city},  {dataSource.zip_code}</p>
+                            <p><b>Email :</b> {dataSource.email}, <b> Phone Number :</b> {dataSource.phone_number}</p>
+                            <p><b>Height : </b> {dataSource.height} {dataSource.height_type},<b> Weight :</b> {dataSource.weight} kgs</p>
                             <hr />
                         </div>
                     </div>
                 </>
             }
-
+            <Modal size={"wrapper modal-dialog-centered modal-md"} show={message} onHide={closePopup}>
+                <Modal.Body>
+                    <div className="alert_box">
+                        <div className="icon">
+                            <i className="fa-solid fa-check"></i>
+                        </div>
+                        <header>{messageErr}</header>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <button type="button" className="btn delete-btn" onClick={closePopup} >Close</button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }

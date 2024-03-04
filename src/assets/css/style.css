@@ -12,27 +12,44 @@
     box-sizing: border-box;
   }
 
+  .mar-aut {
+    justify-content: center;
+  }
+
   .save-btn {
     font-size: 20px;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    margin: auto;
     width: 200px;
+    justify-content: center;
     background: #27c027;
     border-radius: 5px;
     color: #ffffff;
   }
 
-  
   .save-btn:hover {
     font-size: 20px;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    margin: auto;
     width: 200px;
-    background: #11f711;
+    justify-content: center;
+    background: #27c027;
+    border-radius: 5px;
+    color: #ffffff;
+    border-color: #00eeff;
+  }
+
+  .clear-btn {
+    font-size: 20px;
+    width: 200px;
+    justify-content: center;
+    background: #ff0000;
+    border-radius: 5px;
+    color: #ffffff;
+    margin-left: 10px;
+  }
+
+  .clear-btn:hover {
+    font-size: 20px;
+    width: 200px;
+    justify-content: center;
+    background: #ff0000;
     border-radius: 5px;
     color: #ffffff;
     border-color: #00eeff;
@@ -60,5 +77,42 @@
     border: var(--bs-border-width) solid var(--bs-border-color);
     border-radius: var(--bs-border-radius);
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.submit-btn {
+  font-size: 20px;
+  justify-content: center;
+  background: #27c027;
+  border-radius: 5px;
+  color: #ffffff;
+}
+
+.submit-btn:hover {
+  font-size: 20px;
+  justify-content: center;
+  background: #27c027;
+  border-radius: 5px;
+  color: #ffffff;
+  border-color: #00eeff;
+}
+
+.delete-btn {
+  font-size: 20px;
+  width: 200px;
+  justify-content: center;
+  background: #ff0000;
+  border-radius: 5px;
+  color: #ffffff;
+  margin-left: 10px;
+}
+
+.delete-btn:hover {
+  font-size: 20px;
+  width: 200px;
+  justify-content: center;
+  background: #ff0000;
+  border-radius: 5px;
+  color: #ffffff;
+  border-color: #00eeff;
 }
   
