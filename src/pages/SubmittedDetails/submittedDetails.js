@@ -15,6 +15,7 @@ const SubmittedDetails = () => {
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState(false);
     const [messageErr, setMessageErr] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const openPopup = () => {
         setMessage(true);
@@ -31,11 +32,22 @@ const SubmittedDetails = () => {
 
     const formDetails = () => {
         API.get('/form/list').then((response) => {
-            setDataSource(response.data?.data)
-            setTotalRecords(response.data.data.length);
-            setTimeout(() => {
-                setLoading(false);
-            }, 1000);
+          
+            if (response.data.data) {
+                setDataSource(response.data?.data);
+                setDataSource(response.data?.data)
+                setTotalRecords(response.data?.data.length);
+                setTimeout(() => {
+                    setLoading(false);
+                }, 1000);
+            }
+            else {
+                setTimeout(() => {
+                    setErrorMessage(response.data?.error);
+                    setLoading(false);
+                }, 100);
+                
+            }
 
         });
 
@@ -74,7 +86,7 @@ const SubmittedDetails = () => {
                                     <p><b>Height : </b> {dataSource.height} {dataSource.height_type},<b> Weight :</b> {dataSource.weight} kgs</p>
                                     <hr />
                                 </div>
-                            </div>) : <div colSpan="20" className='text-center'  ><p className="mandatry">No Data Found</p> </div>}
+                            </div>) : <div colSpan="20" className='text-center'  ><p className="mandatry">{errorMessage ? errorMessage : "No Data Found"}</p> </div>}
 
                     <ul className="pagination">
                         <Pagination className=""
